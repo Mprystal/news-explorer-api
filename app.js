@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
+const rateLimiter = require('express-rate-limit');
 
 const { PORT = 3000 } = process.env;
 
@@ -33,6 +34,12 @@ app.use((req, res, next) => {
 
 app.use(cors());
 app.options('*', cors());
+
+const limiter = rateLimiter({
+  windowMs: 15 * 60 * 100,
+  max: 100,
+});
+app.use(limiter);
 
 app.use(helmet());
 
