@@ -6,13 +6,13 @@ const NotFoundError = require('../middleware/notFoundError');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const getUser = (req, res, next) => {
-  User.findById(req.user._id).then((user) => {
+  User.findById(req.user._id).select('-_id').then((user) => {
     if (!user) {
       throw new NotFoundError('The provided token is invalid');
     }
-    return res.status(200).send({ user });
+    return res.status(200).send({ data: user.toJSON() });
   })
-    .catch(console.log(req), next);
+    .catch(next);
 };
 
 const createUser = (req, res) => {
