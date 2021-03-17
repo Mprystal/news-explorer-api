@@ -20,12 +20,17 @@ const createArticle = (req, res) => {
 };
 
 const deleteArticle = (req, res, next) => {
-  Article.findById(req.params.articleId).then((article) => {
-    if (!article) {
-      throw new NotFoundError('No article with such Id');
-    }
-    return Article.remove(article).then(() => { res.send({ data: article }); });
-  })
+  Article.findById(req.params.articleId).select('+owner')
+    .then((article) => {
+      if (!article) {
+        throw new NotFoundError('No article with such Id');
+      }
+      if (String(article.owner) !== req.user._id) {
+        res.status(403).send({ message: 'You do not have permission' });
+        return;
+      }
+      Article.deleteOne(article).then(() => { res.send({ data: article }); });
+    })
     .catch(next);
 };
 
