@@ -47,14 +47,14 @@ app.use(express.json());
 
 app.use(requestLogger);
 
-app.post('/signin', celebrate({
+app.post('/api/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 }), login);
 
-app.post('/signup', celebrate({
+app.post('/api/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
@@ -64,8 +64,8 @@ app.post('/signup', celebrate({
 createUser);
 
 app.use(auth);
-app.use('/', userRouter);
-app.use('/', articleRouter);
+app.use('/api', userRouter);
+app.use('/api', articleRouter);
 
 app.get('*', () => {
   throw new NotFoundError('Requested resource not found');
