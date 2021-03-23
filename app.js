@@ -6,7 +6,7 @@ const { celebrate, Joi, errors } = require('celebrate');
 const helmet = require('helmet');
 const rateLimiter = require('express-rate-limit');
 
-const { PORT = 3000, ARTICLE_DB } = process.env;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
@@ -19,7 +19,7 @@ const NotFoundError = require('./middleware/notFoundError');
 const auth = require('./middleware/auth');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 
-mongoose.connect(ARTICLE_DB, {
+mongoose.connect('mongodb://localhost:27017/articlesdb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
