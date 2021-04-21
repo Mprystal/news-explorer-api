@@ -2,7 +2,9 @@ const Article = require('../models/article');
 const NotFoundError = require('../middleware/notFoundError');
 
 const getArticles = (req, res) => {
-  Article.find({}).then((articles) => res.status(200).send(articles))
+  const owner = req.user._id;
+  Article.find({ owner })
+    .then((articles) => res.status(200).send(articles))
     .catch(() => res.status(500).send({ message: 'Sever Error' }));
 };
 
@@ -13,14 +15,24 @@ const createArticle = (req, res) => {
   } = req.body;
 
   Article.create({
-    keyword, title, text, date, source, link, image, owner,
+    keyword,
+    title,
+    text,
+    date,
+    source,
+    link,
+    image,
+    owner,
   })
-    .then((article) => { res.status(200).send({ data: article.toJSON() }); })
+    .then((article) => {
+      res.status(200).send({ data: article.toJSON() });
+    })
     .catch((err) => console.log(err));
 };
 
 const deleteArticle = (req, res, next) => {
-  Article.findById(req.params.articleId).select('+owner')
+  Article.findById(req.params.articleId)
+    .select('+owner')
     .then((article) => {
       if (!article) {
         throw new NotFoundError('No article with such Id');
@@ -29,7 +41,9 @@ const deleteArticle = (req, res, next) => {
         res.status(403).send({ message: 'You do not have permission' });
         return;
       }
-      Article.deleteOne(article).then(() => { res.send({ data: article }); });
+      Article.deleteOne(article).then(() => {
+        res.send({ data: article });
+      });
     })
     .catch(next);
 };
